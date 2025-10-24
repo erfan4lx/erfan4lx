@@ -25,3 +25,7 @@
     alt="Top languages"
   />
 </p>
+
+<p align="center">
+  <sub>Last update: <!--LAST_UPDATED:START-->1970-01-01 00:00 UTC<!--LAST_UPDATED:END--></sub>
+</p>
