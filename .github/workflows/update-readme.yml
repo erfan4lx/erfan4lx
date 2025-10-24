@@ -1,0 +1,37 @@
+name: Daily README update
+
+on:
+  schedule:
+    - cron: "0 0 * * *"   # every day at 00:00 UTC
+  workflow_dispatch:       # allow manual run from Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update timestamp in README
+        shell: bash
+        run: |
+          TS="$(date -u +"%Y-%m-%d %H:%M UTC")"
+          sed -i -E "s/(<!--LAST_UPDATED:START-->).*(<!--LAST_UPDATED:END-->)/\1${TS}\2/" README.md
+          echo "Updated to: ${TS}"
+          git diff --exit-code README.md || echo "README changed"
+
+      - name: Commit and push if changed
+        shell: bash
+        run: |
+          if ! git diff --quiet README.md; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add README.md
+            git commit -m "chore: daily README update [${GITHUB_RUN_ID}]"
+            git push
+          else
+            echo "No changes to commit."
+          fi
